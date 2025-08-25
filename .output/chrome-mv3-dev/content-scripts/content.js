@@ -10,7 +10,7 @@ var content = (function() {
     runAt: "document_start",
     main() {
       document.addEventListener("focusin", (event) => {
-        if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLDivElement && event.target.isContentEditable) {
           browser.runtime.sendMessage({
             action: "inputFocused",
             elementId: event.target.id || ""
@@ -18,7 +18,7 @@ var content = (function() {
         }
       });
       document.addEventListener("contextmenu", (event) => {
-        if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLDivElement && event.target.isContentEditable) {
           browser.runtime.sendMessage({
             action: "contextMenuClicked",
             elementId: event.target.id || ""

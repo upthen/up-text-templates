@@ -1,6 +1,8 @@
 export default defineBackground(() => {
   console.log("Hello background!", { id: browser.runtime.id });
 
+  browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+
   // 定义默认自定义文本数组
   let customTexts = [];
 
@@ -99,6 +101,8 @@ export default defineBackground(() => {
   // 插入文本的函数
   function insertText(text: string) {
     const activeElement = document.activeElement;
+
+    // 处理传统的输入框和文本域
     if (
       activeElement instanceof HTMLInputElement ||
       activeElement instanceof HTMLTextAreaElement
@@ -115,6 +119,46 @@ export default defineBackground(() => {
 
       // 触发输入事件，使其他监听器能够响应
       activeElement.dispatchEvent(new Event("input", { bubbles: true }));
+
+      return; // 处理完后直接返回
+    }
+
+    // 处理可编辑的div元素
+    if (
+      activeElement instanceof HTMLDivElement &&
+      activeElement.isContentEditable
+    ) {
+      // 获取选中的文本范围
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+
+        // 删除选中的内容（如果有）
+        range.deleteContents();
+
+        // 插入新文本
+        const textNode = document.createTextNode(text);
+        range.insertNode(textNode);
+
+        // 将光标移动到插入文本的末尾
+        range.setStartAfter(textNode);
+        range.setEndAfter(textNode);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // 触发输入事件，使其他监听器能够响应
+        activeElement.dispatchEvent(new Event("input", { bubbles: true }));
+
+        return; // 处理完后直接返回
+      }
+    }
+
+    // 如果以上都不匹配，尝试使用document.execCommand作为备选方案
+    // 注意：document.execCommand已被废弃，但在某些情况下仍然有效
+    try {
+      document.execCommand("insertText", false, text);
+    } catch (err) {
+      console.error("无法插入文本:", err);
     }
   }
 });

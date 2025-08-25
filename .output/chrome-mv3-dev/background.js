@@ -8,6 +8,7 @@ var background = (function() {
   const browser = browser$1;
   const definition = defineBackground(() => {
     console.log("Hello background!", { id: browser.runtime.id });
+    browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
     let customTexts = [];
     browser.storage.local.get(["customTemplates"]).then((result2) => {
       console.log("从存储中获取的模板:", result2);
@@ -89,6 +90,27 @@ var background = (function() {
         const newCursorPos = startPos + text.length;
         activeElement.setSelectionRange(newCursorPos, newCursorPos);
         activeElement.dispatchEvent(new Event("input", { bubbles: true }));
+        return;
+      }
+      if (activeElement instanceof HTMLDivElement && activeElement.isContentEditable) {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          range.deleteContents();
+          const textNode = document.createTextNode(text);
+          range.insertNode(textNode);
+          range.setStartAfter(textNode);
+          range.setEndAfter(textNode);
+          selection.removeAllRanges();
+          selection.addRange(range);
+          activeElement.dispatchEvent(new Event("input", { bubbles: true }));
+          return;
+        }
+      }
+      try {
+        document.execCommand("insertText", false, text);
+      } catch (err) {
+        console.error("无法插入文本:", err);
       }
     }
   });

@@ -6,7 +6,9 @@ export default defineContentScript({
     document.addEventListener("focusin", (event) => {
       if (
         event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement
+        event.target instanceof HTMLTextAreaElement ||
+        (event.target instanceof HTMLDivElement &&
+          event.target.isContentEditable)
       ) {
         // 发送消息到后台脚本，通知输入框已聚焦
         browser.runtime.sendMessage({
@@ -20,7 +22,9 @@ export default defineContentScript({
     document.addEventListener("contextmenu", (event) => {
       if (
         event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement
+        event.target instanceof HTMLTextAreaElement ||
+        (event.target instanceof HTMLDivElement &&
+          event.target.isContentEditable)
       ) {
         // 发送消息到后台脚本，通知右键菜单被点击
         browser.runtime.sendMessage({
