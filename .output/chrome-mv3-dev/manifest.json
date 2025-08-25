@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "wxt-vue-starter",
-  "description": "manifest.json description",
+  "name": "文本模板",
+  "description": "一个 Chrome 扩展，帮助您创建和快速输入文本模板。",
   "version": "0.0.0",
   "icons": {
     "16": "icon/16.png",

@@ -117,7 +117,7 @@ onMounted(() => {
   <div class="popup-container">
     <!-- 列表视图 -->
     <div v-if="!selectedTemplate" class="list-view">
-      <h2>文本模板插件</h2>
+      <h2>文本模板</h2>
       <div class="import-section">
         <input
           type="file"
@@ -126,7 +126,23 @@ onMounted(() => {
           @change="handleFileImport"
           style="display: none"
         />
-        <button @click="triggerFileSelect">导入JSON模板</button>
+        <button @click="triggerFileSelect" class="import-button">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+            />
+            <path
+              d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+            />
+          </svg>
+          导入JSON模板
+        </button>
       </div>
 
       <div v-if="loading" class="loading">加载中...</div>
@@ -142,8 +158,14 @@ onMounted(() => {
             class="template-item"
             @click="showTemplateDetail(template)"
           >
-            <div class="template-title">{{ template.title }}</div>
-            <div class="template-category">{{ template.category }}</div>
+            <div class="template-header">
+              <div class="template-title">{{ template.title }}</div>
+              <div class="template-category">{{ template.category }}</div>
+            </div>
+            <div class="template-preview">
+              {{ template.text.substring(0, 100)
+              }}{{ template.text.length > 100 ? "..." : "" }}
+            </div>
           </div>
         </div>
       </div>
@@ -152,13 +174,27 @@ onMounted(() => {
     <!-- 详情视图 -->
     <div v-else class="detail-view">
       <div class="detail-header">
-        <button @click="backToList" class="back-button">&larr; 返回</button>
+        <button @click="backToList" class="back-button">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
+            />
+          </svg>
+          返回
+        </button>
         <h3>{{ selectedTemplate.title }}</h3>
       </div>
       <div class="detail-content">
         <div class="detail-field">
           <label>分类:</label>
-          <span>{{ selectedTemplate.category }}</span>
+          <span class="category-tag">{{ selectedTemplate.category }}</span>
         </div>
         <div class="detail-field">
           <label>内容:</label>
@@ -171,9 +207,20 @@ onMounted(() => {
 
 <style scoped>
 .popup-container {
-  width: 300px; /* 调整为适合侧边栏的宽度 */
-  min-height: 300px;
+  width: 350px;
+  min-height: 400px;
   padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #f8f9fa;
+}
+
+h2 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* 列表视图样式 */
@@ -182,26 +229,39 @@ onMounted(() => {
   text-align: center;
 }
 
-button {
+.import-button {
   background-color: #42b883;
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
+  padding: 12px 20px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-button:hover {
+.import-button:hover {
   background-color: #359c6d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.import-button:active {
+  transform: translateY(0);
 }
 
 .loading,
 .error,
 .no-templates {
   text-align: center;
-  padding: 20px;
-  color: #666;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-size: 14px;
 }
 
 .error {
@@ -209,36 +269,81 @@ button:hover {
 }
 
 .templates-list {
-  max-height: 300px;
+  max-height: 350px;
   overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* 滚动条样式 */
+.templates-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.templates-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.templates-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.templates-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 .template-item {
-  padding: 12px 15px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  margin-bottom: 10px;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 12px;
   cursor: pointer;
   transition: all 0.2s;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .template-item:hover {
-  background-color: #f5f5f5;
-  border-color: #ddd;
+  border-color: #cbd5e0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.template-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
 }
 
 .template-title {
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 15px;
 }
 
 .template-category {
+  background-color: #edf2f7;
+  color: #4a5568;
   font-size: 12px;
-  color: #666;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.template-preview {
+  color: #718096;
+  font-size: 13px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* 详情视图样式 */
-.detail-view {
+detail-view {
   padding: 10px 0;
 }
 
@@ -247,15 +352,30 @@ button:hover {
 }
 
 .back-button {
-  background-color: #eee;
-  color: #333;
-  padding: 5px 10px;
-  font-size: 12px;
-  margin-bottom: 10px;
+  background-color: #edf2f7;
+  color: #4a5568;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  margin-bottom: 15px;
 }
 
 .back-button:hover {
-  background-color: #ddd;
+  background-color: #e2e8f0;
+}
+
+.detail-header h3 {
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
 }
 
 .detail-content {
@@ -263,20 +383,37 @@ button:hover {
 }
 
 .detail-field {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .detail-field label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.category-tag {
+  background-color: #4299e1;
+  color: white;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  display: inline-block;
 }
 
 .template-text {
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 4px;
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
   white-space: pre-wrap;
   word-break: break-all;
+  line-height: 1.5;
+  color: #2d3748;
+  font-size: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 </style>
