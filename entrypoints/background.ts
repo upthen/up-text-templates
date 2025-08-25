@@ -136,13 +136,27 @@ export default defineBackground(() => {
         // 删除选中的内容（如果有）
         range.deleteContents();
 
-        // 插入新文本
-        const textNode = document.createTextNode(text);
-        range.insertNode(textNode);
+        // 创建一个临时div来处理包含换行符的文本
+        const tempDiv = document.createElement("div");
+        tempDiv.innerText = text; // 使用innerText会自动处理换行符
+
+        // 将处理后的内容逐个插入到range中
+        const fragment = document.createDocumentFragment();
+        let lastNode;
+
+        while (tempDiv.firstChild) {
+          lastNode = tempDiv.firstChild;
+          fragment.appendChild(lastNode);
+        }
+
+        range.insertNode(fragment);
 
         // 将光标移动到插入文本的末尾
-        range.setStartAfter(textNode);
-        range.setEndAfter(textNode);
+        if (lastNode) {
+          range.setStartAfter(lastNode);
+          range.setEndAfter(lastNode);
+        }
+
         selection.removeAllRanges();
         selection.addRange(range);
 

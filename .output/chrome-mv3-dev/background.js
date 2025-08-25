@@ -97,10 +97,19 @@ var background = (function() {
         if (selection && selection.rangeCount > 0) {
           const range = selection.getRangeAt(0);
           range.deleteContents();
-          const textNode = document.createTextNode(text);
-          range.insertNode(textNode);
-          range.setStartAfter(textNode);
-          range.setEndAfter(textNode);
+          const tempDiv = document.createElement("div");
+          tempDiv.innerText = text;
+          const fragment = document.createDocumentFragment();
+          let lastNode;
+          while (tempDiv.firstChild) {
+            lastNode = tempDiv.firstChild;
+            fragment.appendChild(lastNode);
+          }
+          range.insertNode(fragment);
+          if (lastNode) {
+            range.setStartAfter(lastNode);
+            range.setEndAfter(lastNode);
+          }
           selection.removeAllRanges();
           selection.addRange(range);
           activeElement.dispatchEvent(new Event("input", { bubbles: true }));
