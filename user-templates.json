@@ -1,0 +1,20 @@
+[
+  {
+    "id": "greeting1",
+    "title": "bug修复模板",
+    "text": "Problem Analysis: 功能缺陷\nSolved Solution: 修复功能缺陷\nImpact Analysis: no impact to other components for the function is internal used\nSolved Version:\nTest Instruction:\nredo the test\nUnit Test Case No./Name:\nChangeSet:\nReviewer:",
+    "category": "BugFix"
+  },
+  {
+    "id": "LGTM",
+    "title": "LGTM",
+    "text": "LGTM",
+    "category": "CodeReview"
+  },
+  {
+    "id": "PTAL",
+    "title": "PTAL",
+    "text": "PTAL",
+    "category": "CodeReview"
+  }
+]
